@@ -74,9 +74,12 @@ bool decodeDir(QFile& log)//, Ring& ring, Aes& aes)
 	QString logPath = logInfo.absolutePath()+QDir::separator();
 	unsigned int treated = 0;
 	unsigned int fileSize = log.size();
+		char filePathLengthString[2];
+		char key[64];
+		//char filePath[filePathLength+1];
+		char filePath[512];
 	while (treated < fileSize)
 	{
-		char filePathLengthString[2];
 		if (log.read(filePathLengthString, 2) != 2)
 		{
 			return false;
@@ -84,20 +87,20 @@ bool decodeDir(QFile& log)//, Ring& ring, Aes& aes)
 		unsigned int filePathLengthHigh = filePathLengthString[0];
 		unsigned int filePathLengthLow = filePathLengthString[1];
 		unsigned int filePathLength = (filePathLengthHigh<<8) | filePathLengthLow;
-		char filePath[filePathLength+1];
+printf(".\n");
+printf(".\n");
 		if (log.read(filePath, filePathLength) != filePathLength)
 		{
 			return false;
 		}
 		filePath[filePathLength] = '\0';
-		char key[64];
 		if (log.read(key, 64) != 64)
 		{
 			return false;
 		}
 		QString qFilePath(logPath);
 		qFilePath.append(filePath);
-printf("%s\n", qFilePath.toStdString().c_str());
+printf("%s %u %u %u\n", qFilePath.toStdString().c_str(), filePathLength, treated, fileSize);
 		/*if (!decodeFile())
 		{
 			return false;
